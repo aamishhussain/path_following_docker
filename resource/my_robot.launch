@@ -1,0 +1,55 @@
+<!--
+  Copyright 2016 The Cartographer Authors
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<launch>
+    <arg name="load_state_filename" default="" />
+    <arg name="create_map" default="true" />
+    <arg name="localize_only" default="false" />
+    <arg name="map_file_name" default="cartmap" />	
+      <param name="/use_sim_time" value="false" />
+<remap from="/points2" to="/vertical_laser_3d"/>
+
+    <group if="$(arg localize_only)" >
+      <node name="cartographer_node" pkg="cartographer_ros"
+      type="cartographer_node" args="
+          -configuration_directory $(find cartographer_ros)/configuration_files
+          -configuration_basename my_robot_localization.lua
+          -load_state_filename $(arg load_state_filename)"
+      output="screen">
+     </node>
+    </group>
+    <group if="$(arg create_map)" >
+      <node name="cartographer_node"
+            pkg="cartographer_ros"
+            type="cartographer_node"
+            args="-configuration_directory $(find cartographer_ros)/configuration_files 
+		  -configuration_basename my_robot.lua"
+            output="screen">
+      </node>
+    </group>
+      <node name="cartographer_occupancy_grid_node"
+            pkg="cartographer_ros"
+            type="cartographer_occupancy_grid_node" />
+      <node name="robot_pose_publisher"
+            pkg="robot_pose_publisher"
+            type="robot_pose_publisher"
+            respawn="false"
+            output="screen" />
+      <!-- Converter converts geometry/point_stamped msg to geometry/point msg type to be used in Rviz -->
+      <node pkg="converter_pose"
+            name="converter_pose"
+            type="converter.py" />
+</launch>

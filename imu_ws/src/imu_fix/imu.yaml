@@ -1,0 +1,3 @@
+# usb_stick_params
+port: /dev/sensors/imu
+frame_id: imu

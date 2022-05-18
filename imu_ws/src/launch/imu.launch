@@ -1,0 +1,15 @@
+<launch>
+  <node pkg="bno055_usb_stick" type="bno055_usb_stick_node" name="bno055_usb_stick_node" output="screen">
+    <rosparam file="$(find imu_fix)/imu.yaml" command="load"/>
+    <remap from="/imu" to="/imu_disabled_covariance"/>
+  </node>
+
+  <node pkg="imu_fix" type="imu_fix.py" name="imu_fix">
+    <remap from="imu_in" to="/imu_disabled_covariance"/>
+    <remap from="imu_out" to="/imu"/>
+  </node>
+
+  <node name="base_link_to_imu_bosch"
+	pkg="tf" type="static_transform_publisher"
+	args="0.0 0.0 0.0 0.0 0.0 0.0 base_link imu 200"/>
+</launch>

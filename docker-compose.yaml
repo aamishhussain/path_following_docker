@@ -1,0 +1,27 @@
+version: "3.9"  # optional since v1.27.0
+services:
+  path_following:
+    build:
+      context: .
+      target: production
+      args:
+        PLATFORM: jetson
+    network_mode: host
+    environment:
+      ROS_MASTER_URI: "http://localhost:11311"
+      ROS_HOSTNAME: "slash1.local"
+    command: "bash -c 'source devel/setup.bash && roslaunch path_following please.launch'"
+#    command: "tail -F anything" 
+#  imu:
+#    build:
+#      context: .
+#      target: imu
+#      args:
+#        PLATFORM: jetson
+#    network_mode: host
+#    environment:
+#      ROS_MASTER_URI: "http://localhost:11311"
+#      ROS_HOSTNAME: "slash1.local"
+#    devices:
+#      - "/dev/sensors/imu:/dev/sensors/imu"
+#    command: "bash -c 'source devel/setup.bash && roslaunch --wait src/launch/imu.launch'"
