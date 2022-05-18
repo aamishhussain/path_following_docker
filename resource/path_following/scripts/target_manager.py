@@ -86,9 +86,9 @@ def check_threshold(curr_x, curr_y):
     eucl_x = math.pow(curr_x - plan[current_index][1], 2)
     eucl_y = math.pow(curr_y - plan[current_index][2], 2)
     eucl_d = math.sqrt(eucl_x + eucl_y)
-    if  current_index == (len(plan)-1) and threshold >= eucl_d:
+    if  current_index == (len(plan)-1) and threshold <= eucl_d:
         current_index =0
-    elif current_index != (len(plan)-1) and threshold >= eucl_d: 
+    elif current_index != (len(plan)-1) and threshold <= eucl_d: 
         current_index +=1  
 
 
@@ -119,9 +119,12 @@ def odom_callback(data):
     #direction additions
     #-> need to calculate the angle in direction of rotation in z axis
     #-> its the angle that the vector between two points makes it x-axis
-    yaw=math.atan((plan[int(pose_index + 1)][2]-plan[int(pose_index)][2])/(plan[int(pose_index + 1)][1]-plan[int(pose_index)][1]))
+    if current_index == len(plan)-1:
+        yaw=math.atan((plan[0][2]-plan[int(pose_index)][2])/(plan[0][1]-plan[int(pose_index)][1]))
+    else: 
+        yaw=math.atan((plan[int(pose_index + 1)][2]-plan[int(pose_index)][2])/(plan[int(pose_index + 1)][1]-plan[int(pose_index)][1]))
     goal.pose.orientation.z = tf.transformations.quaternion_from_euler(0.0, 0.0, yaw)[2]
-    goal.pose.orientation.z = tf.transformations.quaternion_from_euler(0.0, 0.0, yaw)[3]
+    goal.pose.orientation.w = tf.transformations.quaternion_from_euler(0.0, 0.0, yaw)[3]
 
 
 
@@ -140,9 +143,12 @@ def odom_callback(data):
     goal.pose.position.y    = plan[int(pose_index)][2]
 
     #direction additions
-    yaw=math.atan((plan[int(pose_index + 1)][2]-plan[int(pose_index)][2])/(plan[int(pose_index + 1)][1]-plan[int(pose_index)][1]))
+    if current_index == len(plan)-1:
+        yaw=math.atan((plan[0][2]-plan[int(pose_index)][2])/(plan[0][1]-plan[int(pose_index)][1]))
+    else: 
+        yaw=math.atan((plan[int(pose_index + 1)][2]-plan[int(pose_index)][2])/(plan[int(pose_index + 1)][1]-plan[int(pose_index)][1]))
     goal.pose.orientation.z = tf.transformations.quaternion_from_euler(0.0, 0.0, yaw)[2]
-    goal.pose.orientation.z = tf.transformations.quaternion_from_euler(0.0, 0.0, yaw)[3]
+    goal.pose.orientation.w = tf.transformations.quaternion_from_euler(0.0, 0.0, yaw)[3]
 
     #direction additions end
     seq = seq + 1
