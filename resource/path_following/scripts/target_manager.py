@@ -5,6 +5,10 @@ import sys
 import os
 import math
 import csv
+import tf
+import tf2_ros
+import tf2_geometry_msgs
+
 
 from nav_msgs.msg import Odometry
 from gazebo_msgs.msg import ModelStates 
@@ -112,8 +116,16 @@ def odom_callback(data):
     goal.header.frame_id    = frame_id
     goal.pose.position.x    = plan[int(pose_index)][1]
     goal.pose.position.y    = plan[int(pose_index)][2]
-    goal.pose.orientation.z = 0
-    goal.pose.orientation.w = 1
+    #direction additions
+    #-> need to calculate the angle in direction of rotation in z axis
+    #-> its the angle that the vector between two points makes it x-axis
+    yaw=math.atan((plan[int(pose_index + 1)][2]-plan[int(pose_index)][2])/(plan[int(pose_index + 1)][1]-plan[int(pose_index)][1]))
+    goal.pose.orientation.z = tf.transformations.quaternion_from_euler(0.0, 0.0, yaw)[2]
+    goal.pose.orientation.z = tf.transformations.quaternion_from_euler(0.0, 0.0, yaw)[3]
+
+
+
+    #direction additions end
 
     ang_goal_pub.publish(goal)
 
@@ -126,9 +138,13 @@ def odom_callback(data):
     goal.header.frame_id    = frame_id
     goal.pose.position.x    = plan[int(pose_index)][1]
     goal.pose.position.y    = plan[int(pose_index)][2]
-    goal.pose.orientation.z = 0
-    goal.pose.orientation.w = 1
 
+    #direction additions
+    yaw=math.atan((plan[int(pose_index + 1)][2]-plan[int(pose_index)][2])/(plan[int(pose_index + 1)][1]-plan[int(pose_index)][1]))
+    goal.pose.orientation.z = tf.transformations.quaternion_from_euler(0.0, 0.0, yaw)[2]
+    goal.pose.orientation.z = tf.transformations.quaternion_from_euler(0.0, 0.0, yaw)[3]
+
+    #direction additions end
     seq = seq + 1
 
     vel_goal_pub.publish(goal)
