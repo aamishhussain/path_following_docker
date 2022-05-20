@@ -9,7 +9,7 @@ import tf2_geometry_msgs
 
 from geometry_msgs.msg import PoseStamped
 from geometry_msgs.msg import Pose
-#from drive_msgs.msg import drive_param
+from drive_msgs.msg import drive_param
 from ackermann_msgs.msg import AckermannDrive
 from ackermann_msgs.msg import AckermannDriveStamped
 from gazebo_msgs.msg import ModelStates
@@ -90,7 +90,7 @@ MSG_GOAL            = "recieved new goal: ({}, {})"
 # command publisher
 
 command_pub = rospy.Publisher('/ackermann_drive_stamped', AckermannDriveStamped, queue_size = 1)
-#command_pub_with_drive_param=rospy.Publisher('/commands/drive_param',drive_param,queue_size=1)
+command_pub_with_drive_param=rospy.Publisher('/commands/drive_param',drive_param,queue_size=1)
 
 # deviation publisher
 
@@ -118,13 +118,13 @@ def vehicle_control_node(data):
 
     global lookahead_state
 
-    curr_x = data.pose.position.x
-    curr_y = data.pose.position.y
+    curr_x = data.pose[1].position.x
+    curr_y = data.pose[1].position.y
 
-    heading = tf.transformations.euler_from_quaternion((data.pose.orientation.x,
-                                                        data.pose.orientation.y,
-                                                        data.pose.orientation.z,
-                                                        data.pose.orientation.w))[2]
+    heading = tf.transformations.euler_from_quaternion((data.pose[1].orientation.x,
+                                                        data.pose[1].orientation.y,
+                                                        data.pose[1].orientation.z,
+                                                        data.pose[1].orientation.w))[2]
 
     # begin test (include wheel base)
 
@@ -259,10 +259,10 @@ def vehicle_control_node(data):
 
     command_pub.publish(stamped_command)
 
-   # drive_param_command=drive_param()
-   # drive_param_command.angle=command.steering_angle
-   # drive_param_command.velocity=command.speed
-   # command_pub_with_drive_param.publish(drive_param_command)
+    drive_param_command=drive_param()
+    drive_param_command.angle=command.steering_angle
+    drive_param_command.velocity=command.speed
+    command_pub_with_drive_param.publish(drive_param_command)
 
 
 # relative pose callback
@@ -299,8 +299,8 @@ if __name__ == '__main__':
     try:
         rospy.init_node('vehicle_control_node', anonymous = True)
 
-        rospy.Subscriber('/tracked_pose', PoseStamped, vehicle_control_node)
-
+        #rospy.Subscriber('/tracked_pose', PoseStamped, vehicle_control_node)
+	rospy.Subscriber('/gazebo/model_states', ModelStates, vehicle_control_node)
         if adaptive_lookahead == 'true':
             rospy.Subscriber('/{}/purepursuit_control/adaptive_lookahead'.format(car_name), String, dist_callback)
 

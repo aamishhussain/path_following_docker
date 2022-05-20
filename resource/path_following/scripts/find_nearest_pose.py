@@ -20,7 +20,7 @@ index_pub = rospy.Publisher('/{}/purepursuit_control/index_nearest_point'.format
 min_pose_pub  = rospy.Publisher('/{}/purepursuit_control/visualize_nearest_point'.format(car_name), PoseStamped, queue_size = 1)
 
 def construct_path():
-    file_path = os.path.expanduser('/path_following_ws/src/path_following/path/{}.csv'.format(trajectory_name))
+    file_path = os.path.expanduser('/home/sim/f1-10-simulator/catkin_ws/src/path_following/path/{}.csv'.format(trajectory_name))
 
     with open(file_path) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter = ';')
