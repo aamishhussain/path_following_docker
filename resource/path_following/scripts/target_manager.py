@@ -64,7 +64,7 @@ else:
 
 def construct_path():
     global plan_size
-    file_path = os.path.expanduser('/home/sim/f1-10-simulator/catkin_ws/src/path_following/path/{}.csv'.format(trajectory_name))
+    file_path = os.path.expanduser('/path_following_ws/src/path_following/path/{}.csv'.format(trajectory_name))
 
     with open(file_path) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter = ',')
@@ -102,8 +102,8 @@ def odom_callback(data):
     global vel_lookahead_dist
     global current_index
 
-    curr_x         = data.pose[1].position.x
-    curr_y         = data.pose[1].position.y
+    curr_x         = data.pose.position.x
+    curr_y         = data.pose.position.y
     check_threshold(curr_x, curr_y)
 
     pose_index = current_index
@@ -186,8 +186,8 @@ if __name__ == '__main__':
             rospy.loginfo('obtaining trajectory')
             construct_path()
         #rospy.Subscriber('/{}/purepursuit_control/latched_index'.format(car_name),Int64,index_callback)
-        rospy.Subscriber('/gazebo/model_states', ModelStates, odom_callback)
-	#rospy.Subscriber('/tracked_pose', PoseStamped, odom_callback)
+        #rospy.Subscriber('/gazebo/model_states', ModelStates, odom_callback)
+	rospy.Subscriber('/tracked_pose', PoseStamped, odom_callback)
 	    #print "node running test"
         rospy.spin()
     except rospy.ROSInterruptException:
