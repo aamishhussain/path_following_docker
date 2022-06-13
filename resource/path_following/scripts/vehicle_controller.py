@@ -150,12 +150,13 @@ def vehicle_control_node(data):
     # end test
 
     eucl_d = math.sqrt(math.pow(ang_goal_x - curr_x, 2) + math.pow(ang_goal_y - curr_y, 2))
-
+    print("distance to goal  " + str(eucl_d)) 	
     # begin curvature test
 
     curvature = math.degrees(2.0*(abs(ang_goal_x) - abs(curr_x))/(math.pow(eucl_d, 2)))
 
     steering_angle = math.atan(curvature * WHEELBASE_LEN)
+    print("calculated steering angle   " + str(steering_angle))
 
     # rospy.loginfo('steering from curvature: {}'.format(math.degrees(steering_angle)))
 
@@ -170,6 +171,7 @@ def vehicle_control_node(data):
 
     angle_error = math.acos(1 - (math.pow(proj_eucl_shift, 2)/(2 * math.pow(eucl_d, 2))))
     angle_error = math.degrees(angle_error)
+    print("angle error  " + str(angle_error))
 
     goal_sector = (ang_goal_x - curr_x)*(proj_y - curr_y) - (ang_goal_y - curr_y)*(proj_x - curr_x)
 
@@ -226,7 +228,7 @@ def vehicle_control_node(data):
     # command.speed          = 1.0 - (angle_error/ANGLE_RANGE_A) # * (SPEED_TURN_MIN - SPEED_TURN_MAX)
     # command.speed          = command.speed + SPEED_TURN_MAX
 
-    if goal_sector == GOAL_LEFT:
+    if goal_sector == GOAL_RIGHT:
         command.steering_angle = -1.0 * command.steering_angle
 
     # velocity control node
@@ -256,7 +258,7 @@ def vehicle_control_node(data):
     stamped_command = AckermannDriveStamped()
     stamped_command.header.stamp = rospy.Time.now()
     stamped_command.drive=command
-
+    
     command_pub.publish(stamped_command)
 
     #drive_param_command=drive_param()
