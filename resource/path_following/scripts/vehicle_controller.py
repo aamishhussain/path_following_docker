@@ -47,11 +47,11 @@ ANGLE_TURN_MIN      = 0.0
 
 # throttle map constants
 
-SPEED_TURN_MAX      = 0.50
+SPEED_TURN_MAX      = 1.0
 SPEED_TURN_SWITCH_A = 0.65
 SPEED_TURN_SWITCH_B = 0.75
 SPEED_TURN_SWITCH_C = 0.85
-SPEED_TURN_MIN      = 1.0
+SPEED_TURN_MIN      = 0.5
 
 # command to steering map constants
 
@@ -89,7 +89,7 @@ MSG_GOAL            = "recieved new goal: ({}, {})"
 
 # command publisher
 
-command_pub = rospy.Publisher('/ackermann_drive_stamped', AckermannDriveStamped, queue_size = 1)
+#command_pub = rospy.Publisher('/ackermann_drive_stamped', AckermannDriveStamped, queue_size = 5)
 #command_pub_with_drive_param=rospy.Publisher('/commands/drive_param',drive_param,queue_size=1)
 
 # deviation publisher
@@ -101,12 +101,13 @@ command_pub = rospy.Publisher('/ackermann_drive_stamped', AckermannDriveStamped,
 front_axle               = Pose()
 front_axle.position.x    = 0.325
 front_axle.orientation.w = 1.0
-
+global command
+command = AckermannDrive()
 # pure pursuit node
 
 def vehicle_control_node(data):
 
-    command = AckermannDrive()
+    #global command = AckermannDrive()
 
 #     log_dev = Float64()
 
@@ -117,7 +118,7 @@ def vehicle_control_node(data):
     global vel_goal_y
 
     global lookahead_state
-
+    command_pub = rospy.Publisher('/ackermann_drive_stamped', AckermannDriveStamped, queue_size = 5,latch=True)
     curr_x = data.pose.position.x
     curr_y = data.pose.position.y
 
@@ -250,13 +251,14 @@ def vehicle_control_node(data):
     else:
         command.speed = SCALE_VEL_NO_ADAPTIVE_LOOKAHEAD * command.speed
 
-    if command.speed < SPEED_TURN_MAX:
+    if command.speed > SPEED_TURN_MAX:
         command.speed = SPEED_TURN_MAX
-    if command.speed > SPEED_TURN_MIN:
+    if command.speed < SPEED_TURN_MIN:
         command.speed = SPEED_TURN_MIN
 
     stamped_command = AckermannDriveStamped()
-    stamped_command.header.stamp = rospy.Time.now()
+    stamped_command.header.seq = data.header.seq
+    stamped_command.header.stamp = data.header.stamp
     stamped_command.drive=command
     
     command_pub.publish(stamped_command)

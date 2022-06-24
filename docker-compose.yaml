@@ -9,8 +9,10 @@ services:
     network_mode: host
     environment:
       ROS_MASTER_URI: "http://localhost:11311"
-      ROS_HOSTNAME: "slash1.local"
+      ROS_HOSTNAME: "slash2.local"
     command: "bash -c 'source devel/setup.bash && roslaunch path_following please.launch'"
+
+
 #    command: "tail -F anything" 
 #  imu:
 #    build:

@@ -32,9 +32,9 @@
   <node        name           = 'target_manager'
                pkg            = 'path_following'
                type           = 'target_manager.py'
-	             output="screen"	
+	       output="screen"	
                args           = '$(arg car_name) raceline $(arg use_adaptive_lookahead) $(arg adaptive_lookahead_dist)'/>
-  <remap from="/ackermann_drive_stamped" to="/vesc/low_level/ackermann_cmd_mux/input/navigation" />
+  <remap from="/ackermann_drive_stamped" to="/vesc/high_level/ackermann_cmd_mux/input/default" />
   <!-- vehicle controller -->
   <node        name           = 'purepursuit_controller'
                pkg            = 'path_following'

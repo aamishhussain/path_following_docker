@@ -134,8 +134,8 @@ RUN mkdir src
 #RUN sudo apt-get remove ros-${ROS_DISTRO}-abseil-cpp
 #COPY resource/converter_pose src/converter_pose
 #COPY resource/robot_pose_publisher src/robot_pose_publisher
-COPY resource/path_following src/path_following
 RUN bash -c "sudo apt-get install ros-melodic-ackermann-msgs"
+COPY resource/path_following src/path_following
 RUN bash -c "catkin init && catkin config --extend /opt/ros/melodic"
 RUN bash -c "catkin build --no-status"
 RUN echo 'source /path_following_ws/devel/setup.bash' >> ~/.bashrc
