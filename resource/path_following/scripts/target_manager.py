@@ -44,7 +44,7 @@ global current_index
 current_index = 0
 global threshold 
 
-threshold = 0.1
+threshold = 0.3
 
 
 brake_lookahead        = 2.00

@@ -47,11 +47,11 @@ ANGLE_TURN_MIN      = 0.0
 
 # throttle map constants
 
-SPEED_TURN_MAX      = 1.0
+SPEED_TURN_MAX      = 2.0
 SPEED_TURN_SWITCH_A = 0.65
 SPEED_TURN_SWITCH_B = 0.75
 SPEED_TURN_SWITCH_C = 0.85
-SPEED_TURN_MIN      = 0.5
+SPEED_TURN_MIN      = 1.5
 
 # command to steering map constants
 
@@ -62,7 +62,7 @@ ANGLE_RANGE_D       = 5.0
 
 # velocity control
 
-MAX_VEL_GOAL_DIST   = 6.0
+MAX_VEL_GOAL_DIST   = 2.0
 
 # vehicle physical parameters
 
@@ -225,7 +225,8 @@ def vehicle_control_node(data):
     if angle_error > ANGLE_RANGE_A:
         angle_error = ANGLE_RANGE_A
 
-    command.steering_angle = angle_error/ANGLE_RANGE_A
+    #command.steering_angle = angle_error/ANGLE_RANGE_A
+    command.steering_angle = math.radians(angle_error)
     # command.speed          = 1.0 - (angle_error/ANGLE_RANGE_A) # * (SPEED_TURN_MIN - SPEED_TURN_MAX)
     # command.speed          = command.speed + SPEED_TURN_MAX
 
