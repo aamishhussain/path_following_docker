@@ -89,7 +89,7 @@ def check_threshold(curr_x, curr_y):
         current_index += 1
     return
 
-
+#use this one for not thresholding
 def check_threshold_with_nearest_point(curr_x, curr_y):
     global current_index
     ranges = []
@@ -115,7 +115,9 @@ def odom_callback(data):
     # check_threshold_with_nearest_point(curr_x, curr_y)  # takes nearest point without considering threshold
 
     pose_index = current_index  # current_index presents where we want to go next
-
+    # If using nearest point algorithm then use the line bellow.
+    # pose_index = (pose_index + ang_lookahead_dist) % plan_size
+    
     # print (pose_index)
     # print "is the index"
     goal = PoseStamped()
@@ -164,7 +166,8 @@ def odom_callback(data):
 
     pose_index = current_index  # current_index presents where we want to go next
     # If using nearest point algorithm then use the line bellow.
-    # pose_index = (data.data + ang_lookahead_dist) % plan_size
+    # pose_index = (pose_index + vel_lookahead_dist) % plan_size
+    
     goal = PoseStamped()
     goal.header.seq = seq
     goal.header.stamp = rospy.Time.now()
