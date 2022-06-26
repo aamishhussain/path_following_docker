@@ -11,10 +11,10 @@ from gazebo_msgs.msg import ModelStates
 from std_msgs.msg import Int64
 from std_msgs.msg import String
 
-car_name            = str(sys.argv[1])
-trajectory_name     = str(sys.argv[2])
-adaptive_lookahead  = str(sys.argv[3])
-ang_lookahead_dist  = float(sys.argv[4])
+car_name = str(sys.argv[1])
+trajectory_name = str(sys.argv[2])
+adaptive_lookahead = str(sys.argv[3])
+ang_lookahead_dist = float(sys.argv[4])
 
 plan = []
 
@@ -28,19 +28,21 @@ plan = []
 global plan_size
 global seq
 
-plan         = []
-frame_id     = 'map'
-seq          = 0
-ang_goal_pub = rospy.Publisher('/{}/purepursuit_control/ang_goal'.format(car_name), PoseStamped, queue_size = 1)
-vel_goal_pub = rospy.Publisher('/{}/purepursuit_control/vel_goal'.format(car_name), PoseStamped, queue_size = 1)
-plan_size    = 0
+plan = []
+frame_id = 'map'
+seq = 0
+ang_goal_pub = rospy.Publisher('/{}/purepursuit_control/ang_goal'.format(car_name), PoseStamped, queue_size=1)
+vel_goal_pub = rospy.Publisher('/{}/purepursuit_control/vel_goal'.format(car_name), PoseStamped, queue_size=1)
+plan_size = 0
+
 
 def construct_path():
     global plan_size
-    file_path = os.path.expanduser('/home/sim/f1-10-simulator/catkin_ws/src/path_following/path/{}.csv'.format(trajectory_name))
+    file_path = os.path.expanduser(
+        '/home/sim/f1-10-simulator/catkin_ws/src/path_following/path/{}.csv'.format(trajectory_name))
 
     with open(file_path) as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter = ';')
+        csv_reader = csv.reader(csv_file, delimiter=';')
         for waypoint in csv_reader:
             plan.append(waypoint)
 
@@ -50,10 +52,11 @@ def construct_path():
 
     plan_size = len(plan)
 
+
 # use adaptive lookahead as reported
 
-brake_lookahead        = 2.00
-caution_lookahead      = 2.50
+brake_lookahead = 2.00
+caution_lookahead = 2.50
 unrestricted_lookahead = 3.00
 
 global ang_lookahead_dist
@@ -65,6 +68,7 @@ if adaptive_lookahead != 'true':
 else:
     ang_lookahead_dist = 100
     vel_lookahead_dist = 200
+
 
 def dist_callback(data):
     global ang_lookahead_dist
@@ -78,6 +82,7 @@ def dist_callback(data):
         ang_lookahead_dist = int(unrestricted_lookahead * 100)
 
     vel_lookahead_dist = ang_lookahead_dist * 2
+
 
 def pose_callback(data):
     global seq
@@ -93,13 +98,13 @@ def pose_callback(data):
     #     pose_index = pose_index - plan_size - 2
 
     pose_index = (data.data + ang_lookahead_dist) % plan_size
-    
-    goal                    = PoseStamped()
-    goal.header.seq         = seq
-    goal.header.stamp       = rospy.Time.now()
-    goal.header.frame_id    = frame_id
-    goal.pose.position.x    = plan[pose_index][1]
-    goal.pose.position.y    = plan[pose_index][2]
+
+    goal = PoseStamped()
+    goal.header.seq = seq
+    goal.header.stamp = rospy.Time.now()
+    goal.header.frame_id = frame_id
+    goal.pose.position.x = plan[pose_index][1]
+    goal.pose.position.y = plan[pose_index][2]
     goal.pose.orientation.z = 0
     goal.pose.orientation.w = 1
 
@@ -113,12 +118,12 @@ def pose_callback(data):
     pose_index = (data.data + vel_lookahead_dist) % plan_size
     # rospy.loginfo('current index: {}/{}'.format(pose_index, plan_size))
 
-    goal                    = PoseStamped()
-    goal.header.seq         = seq
-    goal.header.stamp       = rospy.Time.now()
-    goal.header.frame_id    = frame_id
-    goal.pose.position.x    = plan[pose_index][1]
-    goal.pose.position.y    = plan[pose_index][2]
+    goal = PoseStamped()
+    goal.header.seq = seq
+    goal.header.stamp = rospy.Time.now()
+    goal.header.frame_id = frame_id
+    goal.pose.position.x = plan[pose_index][1]
+    goal.pose.position.y = plan[pose_index][2]
     goal.pose.orientation.z = 0
     goal.pose.orientation.w = 1
 
@@ -126,9 +131,10 @@ def pose_callback(data):
 
     vel_goal_pub.publish(goal)
 
+
 if __name__ == '__main__':
     try:
-        rospy.init_node('nearest_goal_isolator', anonymous = True)
+        rospy.init_node('nearest_goal_isolator', anonymous=True)
         # rospy.set_param('lookahead_dist', ang_lookahead_dist)
         if not plan:
             rospy.loginfo('obtaining trajectory')
