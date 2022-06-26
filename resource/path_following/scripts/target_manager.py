@@ -174,7 +174,9 @@ def odom_callback(data):
     goal.header.frame_id = frame_id
     goal.pose.position.x = plan[int(pose_index)][1]
     goal.pose.position.y = plan[int(pose_index)][2]
-
+    goal.pose.orientation.z = plan[int(pose_index)][3]
+    goal.pose.orientation.w = plan[int(pose_index)][4]
+    
     # We don't need this either, we are using the same goal
     # # direction additions
     # if current_index == len(plan) - 1 and (
