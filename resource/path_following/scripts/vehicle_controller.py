@@ -47,11 +47,11 @@ ANGLE_TURN_MIN      = 0.0
 
 # throttle map constants
 
-SPEED_TURN_MAX      = 2.0
+SPEED_TURN_MAX      = 1.0
 SPEED_TURN_SWITCH_A = 0.65
 SPEED_TURN_SWITCH_B = 0.75
 SPEED_TURN_SWITCH_C = 0.85
-SPEED_TURN_MIN      = 1.5
+SPEED_TURN_MIN      = 1.0
 
 # command to steering map constants
 
@@ -118,7 +118,7 @@ def vehicle_control_node(data):
     global vel_goal_y
 
     global lookahead_state
-    command_pub = rospy.Publisher('/ackermann_drive_stamped', AckermannDriveStamped, queue_size = 5,latch=True)
+    command_pub = rospy.Publisher('/ackermann_drive_stamped', AckermannDriveStamped, queue_size = 1)
     curr_x = data.pose.position.x
     curr_y = data.pose.position.y
 
@@ -309,8 +309,8 @@ if __name__ == '__main__':
         if adaptive_lookahead == 'true':
             rospy.Subscriber('/{}/purepursuit_control/adaptive_lookahead'.format(car_name), String, dist_callback)
 
-        rospy.Subscriber('/{}/purepursuit_control/ang_goal'.format(car_name), PoseStamped, ang_pose_callback)
-        rospy.Subscriber('/{}/purepursuit_control/vel_goal'.format(car_name), PoseStamped, vel_pose_callback)
+        rospy.Subscriber('/test/purepursuit_control/ang_goal', PoseStamped, ang_pose_callback)
+        rospy.Subscriber('/test/purepursuit_control/vel_goal', PoseStamped, vel_pose_callback)
 
         rospy.spin()
 

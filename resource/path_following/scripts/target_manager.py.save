@@ -22,7 +22,6 @@ adaptive_lookahead = str(sys.argv[3])
 ang_lookahead_dist = float(sys.argv[4])
 
 plan = []
-plan_inter = []
 
 # index_pub = rospy.Publisher('/{}/purepursuit_control/index_nearest_point'.format(car_name), Int64, queue_size = 1)
 # min_pose_pub  = rospy.Publisher('/{}/purepursuit_control/visualize_nearest_point'.format(car_name), PoseStamped, queue_size = 1)
@@ -44,7 +43,7 @@ global current_index
 current_index = 0
 global threshold
 
-threshold = 0.3
+threshold = 0.2
 
 brake_lookahead = 2.00
 caution_lookahead = 2.50
@@ -68,10 +67,7 @@ def construct_path():
     with open(file_path) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         for waypoint in csv_reader:
-            plan_inter.append(waypoint)
-
-    for  p in range(0,len(plan_inter),55):
-	plan.append(plan_inter[p])
+            plan.append(waypoint)
 
     for index in range(0, len(plan)):
         for point in range(4, len(plan[index])):
@@ -84,8 +80,8 @@ def check_threshold(curr_x, curr_y):
     global current_index
     global threshold
 
-    eucl_x = math.pow(curr_x - plan[current_index][4], 2)
-    eucl_y = math.pow(curr_y - plan[current_index][5], 2)
+    eucl_x = math.pow(curr_x - plan[current_index][1], 2)
+    eucl_y = math.pow(curr_y - plan[current_index][2], 2)
     eucl_d = math.sqrt(eucl_x + eucl_y)
     if current_index == (len(plan) - 1) and threshold >= eucl_d:
         current_index = 0
@@ -102,7 +98,7 @@ def check_threshold_with_nearest_point(curr_x, curr_y):
         eucl_y = math.pow(curr_y - plan[index][5], 2)
         eucl_d = math.sqrt(eucl_x + eucl_y)
         ranges.append(eucl_d)
-    print(ranges) 
+
     current_index = ranges.index(min(ranges))
 
 
@@ -210,7 +206,7 @@ def odom_callback(data):
 
 if __name__ == '__main__':
     try:
-        rospy.init_node('target_manager', anonymous = True)
+        rospy.init_node('target_manager')
         if not plan:
             rospy.loginfo('obtaining trajectory')
             construct_path()
